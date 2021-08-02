@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Aquacy</string>
+    <string name="otpmsg">Sit back and relax !\n while we verify your mobile number</string>
+    <string name="instruction_Spinner_Change_Company">--Change company URL--</string>
+    <string name="error_code_company_valid">Please Enter Register Company URL</string>
+    <string name="error_code_company">Please Enter Company URL</string>
+    <string name="clientmaster">Client Master </string>
+
+    <string-array name="test">
+
+        <item>One</item>
+    </string-array>
+</resources>

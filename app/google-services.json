@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "78600468248",
+    "project_id": "aquacy-20c68",
+    "storage_bucket": "aquacy-20c68.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78600468248:android:d03209884a34c5abaf106d",
+        "android_client_info": {
+          "package_name": "com.project.aquacy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78600468248-asa9uef4flurtap00u7ov6m8pp4r9c91.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHt2eBOGtlHJ6pdOXkEuh4UqNSAitNYsA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78600468248-asa9uef4flurtap00u7ov6m8pp4r9c91.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
