@@ -25,7 +25,7 @@ public class WebUrlClass {
     public static final String MyPREFERENCES_PlantName_KEY = "Plantnamekey";
     public static final String MyPREFERENCES_LOGIN_KEY = "login";
     public static final String MyPREFERENCES_PSW_KEY = "psw";
-    public static final String MyPREFERENCES_MOBILE_KEY = "mobile";
+    public static final String MyPREFERENCES_MOBILE_KEY = "Mobile";
     public static final String MyPREFERENCES_SETTING_KEY = "setting";
     public static final String MyPREFERENCES_SETTING_POSITION_KEY = "settingKRY";
     public static final String MyPREFERENCES_USERMASTER_ID_KEY = "UserMasterId";
@@ -74,6 +74,8 @@ public class WebUrlClass {
 
     public static  final String api_PostEntity = "/api/AC_EntityMasterAPI/PostEntity";
     public static  final String api_GetData = "/api/AC_EntityMasterAPI/GetEntity";
+    public static  final String GETPassword = "/ForgotPass/GETPassword";
+    public static  final String CheckWhatsAppNo = "/api/AC_EntityMasterAPI/CheckWhatsAppNo";
    // public static  final String api_GetData = "/api/AC_EntityMasterAPI/GetEntity?id=07b0be30-27e0-49cc-a3ea-2687c8797040";
     public static final String Errormsg = "error";
 

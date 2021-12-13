@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ClientDetailsBean implements Serializable {
-    String custVendorMasterId, custVendorName, address, mobile, email, meterType, meterNo, connNo, connectionType;
+    String custVendorMasterId, custVendorName, address, mobile, email, meterType, meterNo, connNo, connectionType,isWhatsapp;
     ArrayList<ClientDetailsBean> clientDetailsBeanArrayList;
     int pos;
 
@@ -109,5 +109,13 @@ public class ClientDetailsBean implements Serializable {
 
     public void setClientDetailsBeanArrayList(ArrayList<ClientDetailsBean> clientDetailsBeanArrayList) {
         this.clientDetailsBeanArrayList = clientDetailsBeanArrayList;
+    }
+
+    public String getIsWhatsapp() {
+        return isWhatsapp;
+    }
+
+    public void setIsWhatsapp(String isWhatsapp) {
+        this.isWhatsapp = isWhatsapp;
     }
 }

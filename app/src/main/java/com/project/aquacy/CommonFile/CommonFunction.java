@@ -80,7 +80,7 @@ public class CommonFunction {
         SQLiteDatabase sql = db.getWritableDatabase();
         long a = sql.delete(db.TABLE_CLIENT_DATALIST, "CustVendorMasterId=?", new String[]{id});
         Log.e("data", String.valueOf(a));
-       // sql.delete(db.TABLE_ACTIVITYMASTER, "ActivityId=?", new String[]{ActivityId});
+        // sql.delete(db.TABLE_ACTIVITYMASTER, "ActivityId=?", new String[]{ActivityId});
     }
 
 

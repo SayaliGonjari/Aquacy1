@@ -7,7 +7,7 @@ public class SetAppName {
     private static String getFcmAppName() {
         String retn = "";
 
-            retn = WebUrlClass.AppNameFCM_EKATM;
+        retn = WebUrlClass.AppNameFCM_EKATM;
 
 
 
@@ -17,7 +17,7 @@ public class SetAppName {
     private static String getImageDirectoryName() {
         String retn = "";
 
-            retn = WebUrlClass.IMAGE_DIRECTORY_EKATM;
+        retn = WebUrlClass.IMAGE_DIRECTORY_EKATM;
 
         return retn;
     }

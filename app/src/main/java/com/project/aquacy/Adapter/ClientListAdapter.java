@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class ClientListAdapter extends RecyclerView.Adapter<ClientListAdapter.ClientAdapter> {
     ArrayList<ClientDetailsBean> clientDetailsBeanArrayList;
     Context context;
+    String custName="",address="";
 
     public ClientListAdapter(Context context, ArrayList<ClientDetailsBean> clientDetailsBeanArrayList1) {
 
@@ -40,6 +41,18 @@ public class ClientListAdapter extends RecyclerView.Adapter<ClientListAdapter.Cl
     @Override
     public void onBindViewHolder(@NonNull ClientAdapter holder, int i) {
         try{
+            custName = clientDetailsBeanArrayList.get(i).getCustVendorName();
+            address = clientDetailsBeanArrayList.get(i).getAddress();
+            if(custName.contains("~")){
+                custName = custName.replaceAll("~","\"");
+                clientDetailsBeanArrayList.get(i).setCustVendorName(custName);
+
+            }
+            if(address.contains("~")){
+                address = address.replaceAll("~","\"");
+                clientDetailsBeanArrayList.get(i).setAddress(address);
+
+            }
             holder.txt_CustName.setText(clientDetailsBeanArrayList.get(i).getCustVendorName());
             holder.txt_Addr.setText(clientDetailsBeanArrayList.get(i).getAddress());
             holder.txt_mob.setText(clientDetailsBeanArrayList.get(i).getMobile());
@@ -86,7 +99,7 @@ public class ClientListAdapter extends RecyclerView.Adapter<ClientListAdapter.Cl
                 @Override
                 public void onClick(View v) {
                     ((ClientListActivity) context).EditRow(getAdapterPosition(),true);
-                   // ((ClientListActivity)context).EditRow(getAdapterPosition(),clientDetailsBeanArrayList.get(getAdapterPosition()),true);
+                    // ((ClientListActivity)context).EditRow(getAdapterPosition(),clientDetailsBeanArrayList.get(getAdapterPosition()),true);
                 }
             });
 

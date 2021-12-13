@@ -39,10 +39,10 @@ public class StartSession {
         System.out.println("Envmasterid :"+EnvMasterId);
         System.out.println("Envmasterid-1 :"+LoginId);
         System.out.println("Envmasterid-2 :"+PlantMasterId);
-         // new DownloadGetEnvJSON().execute();
+        // new DownloadGetEnvJSON().execute();
         //    new GetSessionFromServer().execute();
 
-           new DownloadUserMasterIdFromServer().execute();
+        new DownloadUserMasterIdFromServer().execute();
     }
 
     class DownloadUserMasterIdFromServer extends AsyncTask<Integer, Void, String> {
@@ -52,7 +52,7 @@ public class StartSession {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            }
+        }
 
         @Override
         protected String doInBackground(Integer... params) {
@@ -76,7 +76,12 @@ public class StartSession {
             super.onPostExecute(integer);
             if (integer.contains("UserMasterI")) {//UserMasterId##317250de-e70b-4a1c-9b6d-e41bc3fb824a
                 //[{"UserMasterID":"317250de-e70b-4a1c-9b6d-e41bc3fb824a","UserName":"Pradnya Ingale","LoginID":"300169"}]
-                callback.callMethod();
+                if(integer.contains("Session expired")) {
+                    callback.callfailMethod("Session Expired");
+                    new GetSessionFromServer().execute();
+                }else{
+                    callback.callMethod();
+                }
             } else {
                 new GetSessionFromServer().execute();
             }

@@ -13,10 +13,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -40,6 +44,12 @@ import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class AddClientMaster extends AppCompatActivity {
     String PlantMasterId = "", LoginId = "", Password = "", EnvMasterId = "",
             UserMasterId = "", UserName = "", MobileNo = "", clientname = "", clientid = "", contactno = "", contactid = "", id1 = "",
@@ -53,9 +63,10 @@ public class AddClientMaster extends AppCompatActivity {
 
     TextInputEditText edt_fname, edt_lname, edt_addr, edt_mobileNo, emailID, edt_connectionNo, edt_meterNo;
     Toolbar toolbar;
+    String whatsappNo = "";
     Button btn_AMR, btn_noAMR, btn_resident, btn_commercial;
     int clickedConnType = -1;
-    ImageView img_save,img_delete;
+    ImageView img_save, img_delete;
     int clickedMType = -1;
     Utility ut;
     String custVendorMasterId = "", mode = "";
@@ -65,7 +76,8 @@ public class AddClientMaster extends AppCompatActivity {
     ClientListAdapter clientListAdapter;
     ArrayList<ClientDetailsBean> clientDetailsBeanArrayList;
     ProgressBar progress;
-
+    CheckBox checkIsWhatsapp;
+    String entityName = "", addr = "", mob = "", email = "", connNo = "", meterNo = "", fName = "", lName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +112,7 @@ public class AddClientMaster extends AppCompatActivity {
         img_save = findViewById(R.id.img_save);
         img_delete = findViewById(R.id.img_delete);
         progress = findViewById(R.id.progress);
+        checkIsWhatsapp = findViewById(R.id.checkIsWhatsapp);
 
         ut = new Utility();
         userpreferences = getSharedPreferences(WebUrlClass.USERINFO,
@@ -126,7 +139,7 @@ public class AddClientMaster extends AppCompatActivity {
         if (getIntent() != null) {
             mode = getIntent().getStringExtra("Mode");
             clientDetailsBeanArrayList = new ArrayList<>();
-            if(!mode.equals("A")) {
+            if (!mode.equals("A")) {
                 custVendorMasterId = getIntent().getStringExtra("CustvendorMasterId");
 
                 pos = getIntent().getIntExtra("Position", -1);
@@ -185,6 +198,16 @@ public class AddClientMaster extends AppCompatActivity {
                     btn_resident.setBackground(ContextCompat.getDrawable(context, R.drawable.button_grey));
                 }
 
+
+                if (clientDetailsBeanArrayList.get(pos).getIsWhatsapp() != null) {
+                    if (clientDetailsBeanArrayList.get(pos).getIsWhatsapp().equals("Y")) {
+                        checkIsWhatsapp.setChecked(true);
+                    } else {
+                        checkIsWhatsapp.setChecked(false);
+                    }
+                }else{
+                    checkIsWhatsapp.setChecked(false);
+                }
             }
         }
 
@@ -282,69 +305,39 @@ public class AddClientMaster extends AppCompatActivity {
                 }
 
 
-                String entityName = "", addr = "", mob = "", email = "", connNo = "", meterNo = "";
-                entityName = edt_fname.getText().toString().trim() + " " + edt_lname.getText().toString().trim();
-                addr = edt_addr.getText().toString();
+                entityName = (edt_fname.getText().toString().trim() + " " + edt_lname.getText().toString().trim()).trim();
+                fName = edt_fname.getText().toString().trim();
+                lName = edt_lname.getText().toString().trim();
+                addr = edt_addr.getText().toString().trim();
                 mob = edt_mobileNo.getText().toString();
                 email = emailID.getText().toString().trim();
-                meterNo = edt_meterNo.getText().toString();
+                meterNo = edt_meterNo.getText().toString().trim();
                 connNo = edt_connectionNo.getText().toString();
+                String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+                String emailPattern1 = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+[a-z]";
 
-                if (entityName == null || entityName.equals("")) {
-                    Toast.makeText(AddClientMaster.this, "Please enter client name", Toast.LENGTH_SHORT).show();
-                } else if (addr == null || addr.equals("")) {
+                if (fName == null || fName.isEmpty()) {
+                    Toast.makeText(AddClientMaster.this, "Please enter first name", Toast.LENGTH_SHORT).show();
+                } else if (lName == null || lName.isEmpty()) {
+                    Toast.makeText(AddClientMaster.this, "Please enter last name", Toast.LENGTH_SHORT).show();
+                } else if (addr == null || addr.isEmpty()) {
                     Toast.makeText(AddClientMaster.this, "Please enter address", Toast.LENGTH_SHORT).show();
+                } else if (mob.length() != 10 || mob.isEmpty()) {
+                    Toast.makeText(AddClientMaster.this, "Enter valid mobile no", Toast.LENGTH_SHORT).show();
+                } else if (meterNo == null || meterNo.isEmpty()) {
+                    Toast.makeText(AddClientMaster.this, "Enter valid meter no", Toast.LENGTH_SHORT).show();
                 } else {
-
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        if (mode != null || mode.equals("E") || mode.equals("D")) {
-                            jsonObject.put("CustId", custVendorMasterId);
+                    if (!(email == null || email.equals(""))) {
+                        if (!(email.matches(emailPattern) || email.matches(emailPattern1))) {
+                            Toast.makeText(AddClientMaster.this, "Enter valid email id", Toast.LENGTH_SHORT).show();
                         } else {
-                            jsonObject.put("CustId", "");
+                            PostSaveJsonObject();
                         }
-                        jsonObject.put("entityname", entityName);
-                        jsonObject.put("entityadd", addr);
-                        jsonObject.put("mob", mob);
-                        jsonObject.put("email", email);
-                        jsonObject.put("meterno", meterNo);
-                        if (mode != null && mode.equals("E")) {
-                            jsonObject.put("Mode", "E");
-                        }if (mode != null && mode.equals("D")) {
-                            jsonObject.put("Mode", "D");
-                        }
-                        else {
-                            jsonObject.put("Mode", "A");
-                        }
-                        jsonObject.put("metertype", mType);
-                        jsonObject.put("ConnectionType", connType);
-                        jsonObject.put("connectionno", connNo);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    final String finalJosnObj = jsonObject.toString();
-
-                    if (ut.isNet(AddClientMaster.this)) {
-                        progress.setVisibility(View.VISIBLE);
-                        new StartSession(AddClientMaster.this, new CallbackInterface() {
-                            @Override
-                            public void callMethod() {
-                                new PostSaveData().execute(finalJosnObj);
-                            }
-
-                            @Override
-                            public void callfailMethod(String msg) {
-                                progress.setVisibility(View.GONE);
-                                Toast.makeText(AddClientMaster.this, msg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
                     } else {
-                        progress.setVisibility(View.GONE);
-                        Toast.makeText(AddClientMaster.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                        PostSaveJsonObject();
                     }
+
+
                 }
 
 
@@ -366,7 +359,178 @@ public class AddClientMaster extends AppCompatActivity {
         });
 
 
+        edt_mobileNo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length() == 10) {
+                    whatsappNo = s.toString();
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("mob", whatsappNo);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String finalJsonObj = jsonObject.toString();
+                    new CheckWhatsappValid().execute(finalJsonObj);
+                }
+
+            }
+        });
+
+
     }
+
+    public class CheckWhatsappValid extends AsyncTask<String, Void, String> {
+        String response = "";
+        Object res;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String url = CompanyURL + WebUrlClass.CheckWhatsAppNo;
+            String obj = params[0];
+
+            res = ut.OpenPostConnection(url, obj, AddClientMaster.this);
+            try {
+                if (res != null) {
+                    response = res.toString();
+                } else {
+                    response = "error";
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response = "error";
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            if (response.contains("Success")) {
+                checkIsWhatsapp.setChecked(true);
+            } else {
+                checkIsWhatsapp.setChecked(false);
+            }
+        }
+    }
+
+    public void PostSaveJsonObject() {
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (mode != null || mode.equals("E") || mode.equals("D")) {
+                jsonObject.put("CustId", custVendorMasterId);
+            } else {
+                jsonObject.put("CustId", "");
+            }
+            jsonObject.put("entityname", entityName);
+            jsonObject.put("entityadd", addr);
+            jsonObject.put("mob", mob);
+            jsonObject.put("email", email);
+            jsonObject.put("meterno", meterNo);
+            if (mode != null && mode.equals("E")) {
+                jsonObject.put("Mode", "E");
+            }else if (mode != null && mode.equals("D")) {
+                jsonObject.put("Mode", "D");
+            } else {
+                jsonObject.put("Mode", "A");
+            }
+            jsonObject.put("metertype", mType);
+            jsonObject.put("ConnectionType", connType);
+            jsonObject.put("connectionno", connNo);
+            if (checkIsWhatsapp.isChecked()) {
+                jsonObject.put("IsWhatsAppNo", "Y");
+            } else {
+                jsonObject.put("IsWhatsAppNo", "N");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String finalJosnObj = jsonObject.toString().replace("\\\\", "");
+        if (ut.isNet(AddClientMaster.this)) {
+            progress.setVisibility(View.VISIBLE);
+            new StartSession(AddClientMaster.this, new CallbackInterface() {
+                @Override
+                public void callMethod() {
+                    new PostSaveData().execute(finalJosnObj);
+                }
+
+                @Override
+                public void callfailMethod(String msg) {
+                    progress.setVisibility(View.GONE);
+                    Toast.makeText(AddClientMaster.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } else {
+            progress.setVisibility(View.GONE);
+            Toast.makeText(AddClientMaster.this, "No internet connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+
+
+ /*   private void CheckWhatsappValid(String s) {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(CompanyURL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+       ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+
+        JSONObject postParam = null;
+        try {
+            postParam = new JSONObject();
+            postParam.put("mob", s);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Call<String> call = apiInterface.ApiName(postParam);
+        Log.d("API",call.toString());
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Log.d("Response", response.body());
+                if (response != null) {
+                    if (response.body().contains("Not a whatsapp number")) {
+                        checkIsWhatsapp.setChecked(false);
+                    } else if (response.body().contains("Success")) {
+                        checkIsWhatsapp.setChecked(true);
+                    } else {
+                        checkIsWhatsapp.setChecked(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(AddClientMaster.this, "please contact admin ", Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
 
     private class PostSaveData extends AsyncTask<String, Void, String> {
 
@@ -390,9 +554,12 @@ public class AddClientMaster extends AppCompatActivity {
                     response = response.replaceAll("\\\\\\\\/", "");
                     response = response.substring(1, response.length() - 1);
 
+                } else {
+                    response = "error";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                response = "error";
             }
 
             return response;
@@ -414,6 +581,11 @@ public class AddClientMaster extends AppCompatActivity {
                 clientDetailsBean.setConnectionType(connType);
                 clientDetailsBean.setMeterNo(edt_meterNo.getText().toString());
                 clientDetailsBean.setConnNo(edt_connectionNo.getText().toString());
+                if (checkIsWhatsapp.isChecked()) {
+                    clientDetailsBean.setIsWhatsapp("Y");
+                } else {
+                    clientDetailsBean.setIsWhatsapp("N");
+                }
 
                 if (mode != null && mode.equals("E")) {
                     cf.UpdateExpenseDetails(clientDetailsBean, custVendorMasterId);
@@ -423,25 +595,22 @@ public class AddClientMaster extends AppCompatActivity {
                     Toast.makeText(AddClientMaster.this, "Client master updated successfully !!!", Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
                     onBackPressed();
-                }else if(mode != null && mode.equals("D")){
+                } else if (mode != null && mode.equals("D")) {
                     cf.DeleteExpenseDetails(custVendorMasterId);
                     clientDetailsBeanArrayList.remove(pos);
                     //clientDetailsBeanArrayList.add(pos, clientDetailsBean);
                     Toast.makeText(AddClientMaster.this, "Client master deleted successfully !!!", Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
                     onBackPressed();
-                }
-                else {
+                } else {
 
                     clientDetailsBeanArrayList.add(clientDetailsBean);
                     cf.AddClientDetails(clientDetailsBean);
-                   // clientListAdapter.update(clientDetailsBeanArrayList);
+                    // clientListAdapter.update(clientDetailsBeanArrayList);
                     Toast.makeText(AddClientMaster.this, "Client master Save successfully !!!", Toast.LENGTH_SHORT).show();
                     progress.setVisibility(View.GONE);
                     onBackPressed();
                 }
-
-
 
 
             } else {
@@ -514,6 +683,7 @@ public class AddClientMaster extends AppCompatActivity {
 
             }
         }
+
     }
 
     @Override
@@ -521,7 +691,7 @@ public class AddClientMaster extends AppCompatActivity {
         super.onBackPressed();
 
 
-        Intent intent = new Intent(AddClientMaster.this,ClientListActivity.class);
+        Intent intent = new Intent(AddClientMaster.this, ClientListActivity.class);
 
         String datasheetList = new Gson().toJson(new ClientDetailsBean(clientDetailsBeanArrayList));
 

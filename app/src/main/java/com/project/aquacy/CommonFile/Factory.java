@@ -18,14 +18,15 @@ public class Factory {
 
     public static final String CREATE_CLIENT_DATALIST = "CREATE TABLE " + DatabaseHandlers.TABLE_CLIENT_DATALIST
             + "(CustVendorMasterId TEXT," +
-             "CustVendorName TEXT," +
+            "CustVendorName TEXT," +
             "Address TEXT," +
             "Mobile TEXT," +
             "Email TEXT," +
             "MeterType TEXT," +
             "ConnNo TEXT," +
             "MeterNo TEXT," +
-            "ConnectionType TEXT" +
+            "ConnectionType TEXT," +
+            "IsWhatsAppNo TEXT"+
             ")";
 
 

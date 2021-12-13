@@ -108,6 +108,7 @@ public class ActivityLogIn extends AppCompatActivity implements GoogleApiClient.
     DatabaseHandlers db;
     public static Context context;
     Button btnLogin;
+    TextView txt_frgPwd;
     Boolean IsSessionActivate, IsValidUser;
     Spinner edEnv, edPlant;
     String IsCrmUser;
@@ -224,6 +225,14 @@ public class ActivityLogIn extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void setListner() {
+        txt_frgPwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ActivityLogIn.this,ForgetPasswordActivity.class));
+            }
+        });
+
+
         AppCommon.getInstance(ActivityLogIn.this).onHideKeyBoard(ActivityLogIn.this);
 
 
@@ -426,6 +435,7 @@ public class ActivityLogIn extends AppCompatActivity implements GoogleApiClient.
         edLoginId = findViewById(R.id.edLoginId);
         edmob = findViewById(R.id.edmob);
         btnLogin = findViewById(R.id.btnLogin);
+        txt_frgPwd = findViewById(R.id.txt_frgPwd);
 
         mEturl = (EditText) findViewById(R.id.input_Url);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -555,8 +565,8 @@ public class ActivityLogIn extends AppCompatActivity implements GoogleApiClient.
                 editor.putString(WebUrlClass.MyPREFERENCES_PSW_KEY, userPsw);
                 editor.putString(WebUrlClass.MyPREFERENCES_MOBILE_KEY, mobile);
                 editor.commit();
-                //  new DownloadAuthenticate().execute();
-                new DownloadUserMasterIdFromServer().execute();
+                new DownloadAuthenticate().execute();
+
 
             } else {
                 btnLogin.setEnabled(true);
@@ -776,8 +786,141 @@ public class ActivityLogIn extends AppCompatActivity implements GoogleApiClient.
             String AppName = "";
             AppName = SetAppName.AppNameFCM;
 
-            String url = ut.getSharedPreference_URL(context) + WebUrlClass.api_GetOTPServer + "?MobNo=" + MobileNo + "&UserLoginId=" + LoginId + "&AppName=" + AppName;
+           /* String url = ut.getSharedPreference_URL(context) +
+                    WebUrlClass.api_GetOTPServer + "?MobNo=" + MobileNo + "&UserLoginId=" + LoginId + "&AppName=" + AppName;*/
 
+             String url = "http://clientsms.vritti.co.in/VrittiQM.asmx/WatsAppLess?m="+MobileNo+"&u=ae1001&p=vritti123";
+          //  http://clientsms.vritti.co.in/VrittiQM.asmx/WatsAppLess?m=7020256278&u=ae1001&p=vritti123
+
+            try {
+                res = ut.httpGet(url);
+                res = res.toString();
+                res = res.toString().replaceAll("\\\\", "");
+
+
+               // response = ut.OpenConnection(url, MilkRunLocationListActivity.this);
+               /* res = ut.OpenConnection(url, ActivityLogIn.this);
+                res = res.replaceAll("\\\\", "");
+                res = res.substring(1, res.length() - 1);*/
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                res = "Error";
+            }
+            return res;
+        }
+
+
+        @Override
+        protected void onPostExecute(String integer) {
+            super.onPostExecute(integer);
+
+            if(res.contains("Not a whatsapp number")){
+                Toast.makeText(ActivityLogIn.this, "Not a whatsapp number", Toast.LENGTH_SHORT).show();
+            }else if(res.contains("Success")){
+                Toast.makeText(ActivityLogIn.this, "Valid whatsapp number", Toast.LENGTH_SHORT).show();
+            }
+
+            new DownloadAuthenticate1().execute();
+
+
+
+            /*if (res.contains("#Success")) {
+                String data[] = res.split("#");
+                final String OPT = data[0];
+
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ActivityLogIn.this);
+                LayoutInflater inflater = getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.vwb_otp_lay, null);
+                dialogBuilder.setView(dialogView);
+
+                // set the custom dialog components - text, image and button
+                textotp = (EditText) dialogView.findViewById(R.id.edt_otp);
+                Button button = (Button) dialogView.findViewById(R.id.txt_submit);
+                Button txt_resend_otp = (Button) dialogView.findViewById(R.id.txt_resend_otp);
+                // TextView txt_resend_otp=dialogView.findViewById(R.id.txt_resend_otp);
+                dialogBuilder.setCancelable(false);
+                final AlertDialog b = dialogBuilder.create();
+                b.show();
+                // if button is clicked, close the custom dialog
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        String entrotp = textotp.getText().toString().trim();
+                        if (!(entrotp.equals(""))) {
+                            if (entrotp.equalsIgnoreCase(OPT)) {
+                                b.dismiss();
+                                //Toast.makeText(getApplicationContext(), "OTP s", Toast.LENGTH_LONG).show();
+                                new DownloadUserMasterIdFromServer().execute();
+
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Invalid OTP!!! try again", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Enter OTP", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+
+                */
+            /*
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        b.dismiss();
+                    }
+                });
+*//*
+
+                txt_resend_otp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        MobileNo = edmob.getText().toString();
+                        LoginId = edLoginId.getText().toString();
+
+                        new DownloadAuthenticate().execute();
+
+                    }
+                });
+
+            }
+            else if (res.contains("User Not Found")) {
+                btnLogin.setEnabled(true);
+                ut.hideProgress(relProgress);
+                Toast.makeText(getApplicationContext(), "Please Enter Register Mobile Number", Toast.LENGTH_LONG).show();
+            }
+            else if (res.contains("UserId and Password not found in ERPModuleSetUp")) {
+                btnLogin.setEnabled(true);
+                ut.hideProgress(relProgress);
+                Toast.makeText(getApplicationContext(), "OTP service is not registered ", Toast.LENGTH_LONG).show();
+            }
+            else {
+                btnLogin.setEnabled(true);
+                ut.hideProgress(relProgress);
+                Toast.makeText(getApplicationContext(), "temporarily unavailable service!!! Please try after some time..", Toast.LENGTH_LONG).show();
+            }*/
+
+        }
+    }
+
+    class DownloadAuthenticate1 extends AsyncTask<String, Void, String> {
+        String res;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String AppName = "";
+            AppName = SetAppName.AppNameFCM;
+            String url = ut.getSharedPreference_URL(context) + WebUrlClass.api_GetOTPServer + "?MobNo=" + MobileNo + "&UserLoginId=" + LoginId + "&AppName=" + AppName;
+            //UserLoginId=300207&AppName
             try {
                 res = ut.OpenConnection(url, getApplicationContext());
                 res = res.replaceAll("\\\\", "");
@@ -821,6 +964,7 @@ public class ActivityLogIn extends AppCompatActivity implements GoogleApiClient.
                                 b.dismiss();
                                 //Toast.makeText(getApplicationContext(), "OTP s", Toast.LENGTH_LONG).show();
                                 new DownloadUserMasterIdFromServer().execute();
+                               // new DownloadUserMasterIdFromServer().execute();
 
                             } else {
                                 Toast.makeText(getApplicationContext(), "Invalid OTP!!! try again", Toast.LENGTH_LONG).show();
@@ -830,9 +974,7 @@ public class ActivityLogIn extends AppCompatActivity implements GoogleApiClient.
                         }
                     }
                 });
-
-
-                /*
+/*
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

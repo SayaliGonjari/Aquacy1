@@ -76,7 +76,6 @@
                         android:paddingLeft="1dp"
                         android:paddingRight="1dp"
                         android:paddingTop="1dp"
-
                         android:visibility="visible">
 
                         <LinearLayout
@@ -159,8 +158,8 @@
                         android:paddingRight="1dp"
                         android:paddingTop="1dp"
                         android:visibility="gone">
-                        <LinearLayout
 
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/edit_text"
@@ -173,7 +172,6 @@
                                 android:layout_marginTop="10dp"
                                 android:gravity="center_horizontal"
                                 android:padding="5dp"
-
                                 android:text="Enter Login Details"
                                 android:textColor="#000000"
                                 android:textSize="16dp" />
@@ -318,16 +316,34 @@
                                     android:src="@mipmap/ic_mobile" />
 
                             </LinearLayout>
-
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+>
                             <CheckBox
                                 android:id="@+id/checkBox"
-                                android:layout_width="309dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                                android:layout_marginLeft="2dp"
                                 android:checked="false"
+                                android:layout_weight="0.5"
                                 android:text="Show Password"
                                 android:textColor="@color/colorPrimaryDark"
                                 android:typeface="serif" />
+
+
+                                <TextView
+                                    android:id="@+id/txt_frgPwd"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:checked="false"
+                                    android:gravity="right"
+                                    android:layout_weight="0.5"
+                                    android:text="Forgot Password ?"
+                                    android:textColor="@color/colorPrimaryDark"
+                                    android:typeface="serif" />
+
+                            </LinearLayout>
 
                             <Button
                                 android:id="@+id/btnLogin"

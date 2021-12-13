@@ -253,6 +253,7 @@ Context context;
 
         return res;
     }
+
     public static String httpGet(String urlString) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -376,7 +377,7 @@ Context context;
         SharedPreferences sp = mContext.getSharedPreferences(WebUrlClass.PREFERENCE_DATA_CALCULATION, Context.MODE_PRIVATE);
 
         try {
-            se = new StringEntity(FinalObj, HTTP.UTF_8);
+            se = new StringEntity(FinalObj);
 
             httppost.setEntity(se);
             httppost.setHeader("Accept", "application/json");
@@ -400,6 +401,7 @@ Context context;
 
         } catch (Exception e) {
             e.printStackTrace();
+
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM,yyyy hh:mm:ss aa");
             String Ldate = sdf.format(new Date());
             StackTraceElement l = new Exception().getStackTrace()[0];

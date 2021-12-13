@@ -15,9 +15,12 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -39,6 +42,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ClientListActivity extends AppCompatActivity {
 
@@ -58,9 +62,13 @@ public class ClientListActivity extends AppCompatActivity {
     ImageView img_refresh,img_add;
     ClientListAdapter clientListAdapter;
     ArrayList<ClientDetailsBean> clientDetailsBeanArrayList;
+    ArrayList<ClientDetailsBean> filterClientArrayList;
     boolean isEdit = false;
     String custVendorMasterId = "";
     ProgressBar progress;
+    EditText edt_search;
+    ImageView img_search;
+    boolean searchVisible = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +141,65 @@ public class ClientListActivity extends AppCompatActivity {
                 startActivityForResult(i, 110);
             }
         });
+
+        edt_search.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable text) {
+
+                String text1 = edt_search.getText().toString().toLowerCase(Locale.getDefault());
+
+                filter(text1);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1,
+                                          int arg2, int arg3) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                      int arg3) {
+
+
+            }
+        });
+
+        img_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(searchVisible) {
+                    edt_search.setVisibility(View.VISIBLE);
+                    searchVisible = false;
+                }
+                else {
+                    edt_search.setVisibility(View.GONE);
+                    searchVisible = true;
+                }
+            }
+        });
+    }
+
+    private void filter(String text1) {
+        filterClientArrayList.clear();
+        text1 = text1.toLowerCase(Locale.getDefault());
+        if(text1.length() == 0){
+           filterClientArrayList.addAll(clientDetailsBeanArrayList);
+        }else{
+            for (ClientDetailsBean clientDetailsBean : clientDetailsBeanArrayList) {
+                if (clientDetailsBean.getCustVendorName().toLowerCase(Locale.getDefault()).contains(text1)) {
+                    filterClientArrayList.add(clientDetailsBean);
+                }
+            }
+        }
+
+        clientListAdapter = new ClientListAdapter(ClientListActivity.this, filterClientArrayList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        list_clientDetails.setLayoutManager(mLayoutManager);
+        list_clientDetails.setItemAnimator(new DefaultItemAnimator());
+        list_clientDetails.setAdapter(clientListAdapter);
+
+
     }
 
     public void InitView() {
@@ -152,12 +219,16 @@ public class ClientListActivity extends AppCompatActivity {
         Password = ut.getValue(context, WebUrlClass.GET_PSW_KEY, settingKey);
         UserMasterId = ut.getValue(context, WebUrlClass.MyPREFERENCES_USERMASTER_ID_KEY, settingKey);
         UserName = ut.getValue(context, WebUrlClass.MyPREFERENCES_USERNAME_KEY, settingKey);
+        MobileNo = ut.getValue(context, WebUrlClass.MyPREFERENCES_MOBILE_KEY, settingKey);
         sql = db.getWritableDatabase();
         list_clientDetails = findViewById(R.id.list_clientDetails);
         img_refresh = findViewById(R.id.img_refresh);
         img_add = findViewById(R.id.img_add);
         progress = findViewById(R.id.progress);
+        edt_search = findViewById(R.id.edt_search);
+        img_search = findViewById(R.id.img_search);
         clientDetailsBeanArrayList = new ArrayList<>();
+        filterClientArrayList = new ArrayList<>();
     }
 
 
@@ -261,9 +332,10 @@ public class ClientListActivity extends AppCompatActivity {
                 clientDetailsBean.setConnNo(cur.getString(cur.getColumnIndex("ConnNo")));
                 clientDetailsBean.setMeterNo(cur.getString(cur.getColumnIndex("MeterNo")));
                 clientDetailsBean.setConnectionType(cur.getString(cur.getColumnIndex("ConnectionType")));
+                clientDetailsBean.setIsWhatsapp(cur.getString(cur.getColumnIndex("IsWhatsAppNo")));
 
                 clientDetailsBeanArrayList.add(clientDetailsBean);
-
+Activitylo
 
             } while (cur.moveToNext());
 
