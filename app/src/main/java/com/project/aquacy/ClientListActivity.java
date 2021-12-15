@@ -335,7 +335,7 @@ public class ClientListActivity extends AppCompatActivity {
                 clientDetailsBean.setIsWhatsapp(cur.getString(cur.getColumnIndex("IsWhatsAppNo")));
 
                 clientDetailsBeanArrayList.add(clientDetailsBean);
-Activitylo
+
 
             } while (cur.moveToNext());
 
